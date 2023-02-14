@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma" // Used for planet scale, doesn't accept foreign keys
+}
+
+model department {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(30)
+  role role[]
+}
+
+model employee {
+  id             Int        @id @default(autoincrement())
+  first_name     String     @db.VarChar(30)
+  last_name      String     @db.VarChar(30)
+  role_id        Int?
+  manager_id     Int?
+  manager       employee?  @relation("employeeToemployee", fields: [manager_id], references: [id], onUpdate: NoAction, onDelete: NoAction, map: "employee_ibfk_1")
+  other_employee employee[] @relation("employeeToemployee")
+  role           role?       @relation(fields: [role_id], references: [id], onUpdate: NoAction, map: "employee_ibfk_2")
+  @@index([manager_id], map: "manager_id")
+  @@index([role_id], map: "role_id")
+}
+
+model role {
+  id            Int     @id @default(autoincrement())
+  title         String  @db.VarChar(30)
+  salary        Decimal @db.Decimal(10, 2)
+  department_id Int
+  department    department @relation(fields: [department_id], references: [id], onUpdate: NoAction, map: "role_ibfk_1", onDelete: Cascade)
+  employee employee[]
+  @@index([department_id], map: "department_id")
+}
