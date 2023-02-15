@@ -135,13 +135,4 @@ export const employeeSortMethods = {
     },
   },
 };
-export type EmployeeSortMethods =
-  | "none"
-  | "nameAcending"
-  | "nameDecending"
-  | "roleAcending"
-  | "roleDecending"
-  | "departmentAcending"
-  | "departmentDecending"
-  | "idAcending"
-  | "idDecending";
+export type EmployeeSortMethods = keyof typeof employeeSortMethods;
