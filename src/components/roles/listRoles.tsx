@@ -103,7 +103,7 @@ export const ListRoles: React.FC<ListRoleProps> = ({ roles }) => {
               <td>{role.id}</td>
               <td>{role.title}</td>
               <td>{role.department.name}</td>
-              <td>{role.salary.toNumber()}</td>
+              <td>{role.salary.toString()}</td>
               <td>{role._count.employee}</td>
 
               <td>

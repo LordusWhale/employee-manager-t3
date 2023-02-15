@@ -82,10 +82,10 @@ export const roleSortMethods = {
   },
   salaryAcending: {
     method: (a: Role, b: Role) => {
-      if (a.salary < b.salary) {
+      if (parseInt(a.salary.toString()) < parseInt(b.salary.toString())) {
         return -1;
       }
-      if (a.salary > b.salary) {
+      if (parseInt(a.salary.toString()) > parseInt(b.salary.toString())) {
         return 1;
       }
       return 0;
@@ -93,10 +93,10 @@ export const roleSortMethods = {
   },
   salaryDecending: {
     method: (a: Role, b: Role) => {
-      if (a.salary < b.salary) {
+      if (parseInt(a.salary.toString()) < parseInt(b.salary.toString())) {
         return 1;
       }
-      if (a.salary > b.salary) {
+      if (parseInt(a.salary.toString()) > parseInt(b.salary.toString())) {
         return -1;
       }
       return 0;
