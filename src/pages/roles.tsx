@@ -1,4 +1,4 @@
-import { Modal } from "@mantine/core";
+import { LoadingOverlay, Modal } from "@mantine/core";
 import { NextPage } from "next";
 import { api } from "../utils/api";
 import { useState } from "react";
@@ -20,7 +20,7 @@ const Roles: NextPage = () => {
       </button>
       <div className="flex w-full flex-col justify-center py-2 px-10 ">
         {roles.isLoading ? (
-          <p>Loading...</p>
+           <LoadingOverlay style={{position: 'absolute', left: 0, top: 0, zIndex: 0}} visible={roles.isLoading} />
         ) : (
           <div className="w-full py-20">
             {" "}

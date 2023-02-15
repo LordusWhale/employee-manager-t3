@@ -1,10 +1,9 @@
 import { type NextPage } from "next";
-import { Modal } from "@mantine/core";
+import { LoadingOverlay, Modal } from "@mantine/core";
 import { api } from "../utils/api";
 import { useState } from "react";
 import { ListEmployees } from "../components/employees/ListEmployees";
 import { AddEmployee } from "../components/employees/AddEmployee";
-
 const Employees: NextPage = () => {
   const [addEmployee, setAddEmployee] = useState<boolean>(false);
   const employees = api.employee.getAll.useQuery();
@@ -18,9 +17,10 @@ const Employees: NextPage = () => {
       >
         Add employee
       </button>
+      
       <div className="flex w-full flex-col justify-center py-2 px-10 ">
         {employees.isLoading ? (
-          <p>Loading...</p>
+         <LoadingOverlay style={{position: 'absolute', left: 0, top: 0, zIndex: 0}} visible={employees.isLoading} />
         ) : (
           <div className="w-full py-20">
             {employees.data && <ListEmployees employees={employees.data} />}
