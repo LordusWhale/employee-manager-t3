@@ -1,4 +1,4 @@
-import { Input, Select } from "@mantine/core";
+import { Input, Loader, Select } from "@mantine/core";
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { api } from "../../utils/api";
@@ -12,20 +12,22 @@ export const AddEmployee: React.FC<AddEmployeeProps> = ({ setOpen }) => {
   const [lastName, setLastName] = useState<string>("");
   const [empRole, setEmpRole] = useState<string | null>("");
   const [manager, setManager] = useState<string | null>("");
+  const [loading, setLoading] = useState(false);
   const roles = api.role.getAll.useQuery();
   const managers = api.employee.getAll.useQuery();
   const refetch = api.employee.getAll.useQuery().refetch;
   const createEmpDb = api.employee.add.useMutation({
     onSuccess: async () => {
-      await refetch()
-      .catch(err=>{
-        console.log(err)
-      })
+      await refetch().catch((err) => {
+        console.log(err);
+      });
+      setLoading(false);
       setOpen(false);
     },
   });
   const createEmp = async () => {
     if (!empRole) return;
+    setLoading(true);
     await createEmpDb
       .mutateAsync({
         firstName: firstName,
@@ -40,7 +42,9 @@ export const AddEmployee: React.FC<AddEmployeeProps> = ({ setOpen }) => {
   return (
     <div className="flex flex-col gap-8">
       {roles.isLoading || managers.isLoading ? (
-        <p>Loading...</p>
+        <div className="flex h-full w-full items-center justify-center">
+          <Loader />
+        </div>
       ) : (
         <>
           <h1 className="text-center text-lg">Add Employee</h1>
@@ -93,9 +97,18 @@ export const AddEmployee: React.FC<AddEmployeeProps> = ({ setOpen }) => {
               ]}
             ></Select>
           )}
-          <button className="bg-indigo-500 p-2 text-white" onClick={createEmp}>
-            Save
-          </button>
+          <div className="flex w-full items-center justify-center">
+            {loading ? (
+              <Loader />
+            ) : (
+              <button
+                className="w-full bg-indigo-500 p-2 text-white"
+                onClick={createEmp}
+              >
+                Save
+              </button>
+            )}
+          </div>
         </>
       )}
     </div>

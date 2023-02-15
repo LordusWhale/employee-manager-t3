@@ -1,5 +1,5 @@
-import { Input, Select } from "@mantine/core";
-import {  useState } from "react";
+import { Input, Loader, Select } from "@mantine/core";
+import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { api } from "../../utils/api";
 
@@ -13,16 +13,17 @@ export const EditEmployee: React.FC<EditEmployeeProps> = ({ id, setOpen }) => {
   const [lastName, setLastName] = useState<string>("");
   const [empRole, setEmpRole] = useState<string | null>("");
   const [manager, setManager] = useState<string | null>("");
+  const [loading, setLoading] = useState(false);
   const roles = api.role.getAll.useQuery();
   const employee = api.employee.getSingle.useQuery({ id });
   const managers = api.employee.getAll.useQuery();
   const refetch = api.employee.getAll.useQuery().refetch;
   const createEmpDb = api.employee.update.useMutation({
     onSuccess: async () => {
-      await refetch()
-      .catch(err=>{
-        console.log(err)
-      })
+      await refetch().catch((err) => {
+        console.log(err);
+      });
+      setLoading(false);
       setOpen(false);
     },
     onError: (err) => {
@@ -38,8 +39,8 @@ export const EditEmployee: React.FC<EditEmployeeProps> = ({ id, setOpen }) => {
         managerId = null;
       }
     }
+    setLoading(true);
     console.log(managerId);
-
     createEmpDb.mutateAsync({
       id: id,
       firstName: firstName ? firstName : undefined,
@@ -51,7 +52,9 @@ export const EditEmployee: React.FC<EditEmployeeProps> = ({ id, setOpen }) => {
   return (
     <div className="flex flex-col gap-8">
       {roles.isLoading || managers.isLoading || employee.isLoading ? (
-        <p>Loading...</p>
+        <div className="flex h-full w-full items-center justify-center">
+          <Loader />
+        </div>
       ) : (
         employee.data && (
           <>
@@ -113,12 +116,18 @@ export const EditEmployee: React.FC<EditEmployeeProps> = ({ id, setOpen }) => {
                 ]}
               ></Select>
             )}
-            <button
-              className="bg-indigo-500 p-2 text-white"
-              onClick={() => updateEmp()}
-            >
-              Save
-            </button>
+            <div className="flex w-full items-center justify-center">
+              {loading ? (
+                <Loader />
+              ) : (
+                <button
+                  className="w-full bg-indigo-500 p-2 text-white"
+                  onClick={updateEmp}
+                >
+                  Save
+                </button>
+              )}
+            </div>
           </>
         )
       )}

@@ -1,4 +1,4 @@
-import { Input, Select, Slider } from "@mantine/core";
+import { Input, Loader, Select, Slider } from "@mantine/core";
 import { useState } from "react";
 import { Dispatch, SetStateAction } from "react";
 import { api } from "../../utils/api";
@@ -11,6 +11,7 @@ export const AddRole: React.FC<AddRoleProps> = ({ setOpen }) => {
   const [title, setTitle] = useState<string>("");
   const [department, setDepartment] = useState<string | null>("");
   const [salary, setSalary] = useState<number>(50000);
+  const [loading, setLoading] = useState<boolean>(false);
   const departments = api.department.getAll.useQuery();
   const refetch = api.role.getAll.useQuery().refetch;
   const createRoleDb = api.role.add.useMutation({
@@ -19,11 +20,13 @@ export const AddRole: React.FC<AddRoleProps> = ({ setOpen }) => {
       .catch(err=>{
         console.log(err)
       });
+      setLoading(false);
       setOpen(false);
     },
   });
   const createRole = async () => {
     if (!department) return;
+    setLoading(true);
     await createRoleDb
       .mutateAsync({
         department: parseInt(department),
@@ -37,8 +40,10 @@ export const AddRole: React.FC<AddRoleProps> = ({ setOpen }) => {
 
   return (
     <div className="flex flex-col gap-8">
-      {departments.isLoading ? (
-        <p>Loading...</p>
+      {departments.isLoading  ? (
+        <div className="w-full h-full flex items-center justify-center">
+          <Loader />
+        </div>
       ) : (
         <>
           <Input.Wrapper label="Name of department">
@@ -68,10 +73,18 @@ export const AddRole: React.FC<AddRoleProps> = ({ setOpen }) => {
               max={200000}
             />
           </div>
-
-          <button className="bg-indigo-500 p-2 text-white" onClick={createRole}>
-            Save
-          </button>
+          <div className="flex w-full items-center justify-center">
+          {loading ? (
+              <Loader />
+            ) : (
+              <button
+                className="w-full bg-indigo-500 p-2 text-white"
+                onClick={createRole}
+              >
+                Save
+              </button>
+            )}
+            </div>
         </>
       )}
     </div>
