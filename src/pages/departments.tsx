@@ -8,7 +8,6 @@ import { ListDepartments } from "../components/departments/listDepartments";
 const Department: NextPage = () => {
   const [open, setOpen] = useState(false);
   const department = api.department.getAll.useQuery();
-  department.data;
   return (
     <div>
       <button
