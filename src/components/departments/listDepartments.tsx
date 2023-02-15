@@ -2,10 +2,10 @@ import { Modal, Table } from "@mantine/core";
 import { api } from "../../utils/api";
 import { EditDepartment } from "./editDepartment";
 import { useState } from "react";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
 import type { department, role } from "@prisma/client";
 import type { DepartmentSortMethods } from "../../utils/sort/departmentSort";
 import { departmentSortMethods } from "../../utils/sort/departmentSort";
+import { DisplayDepartment } from "./DisplayDepartment";
 type ListDepartmentsProps = {
   departments:
     | (department & {
@@ -21,21 +21,11 @@ type ListDepartmentsProps = {
 export const ListDepartments: React.FC<ListDepartmentsProps> = ({
   departments,
 }) => {
-  const refetch = api.department.getAll.useQuery().refetch;
-  const deleteDepartmentDb = api.department.delete.useMutation({
-    onSuccess: async () => {
-      await refetch().catch((err) => {
-        console.log(err);
-      });
-    },
-  });
   const [departmentId, setDepartmentId] = useState<number>(0);
   const [sortMethod, setSortMethod] =
     useState<DepartmentSortMethods>("idAcending");
   const [open, setOpen] = useState<boolean>(false);
-  const deleteDepartment = (id: number) => {
-    deleteDepartmentDb.mutateAsync({ id });
-  };
+
   return (
     <>
       <Table withColumnBorders>
@@ -83,42 +73,17 @@ export const ListDepartments: React.FC<ListDepartmentsProps> = ({
           {departments
             ?.sort(departmentSortMethods[sortMethod].method)
             .map((department) => {
-              let total = 0;
+              let total = department.role.reduce(
+                (sum, role) => sum + role._count.employee,
+                0
+              );
               return (
-                <tr key={department.id}>
-                  <td>{department.id}</td>
-                  <td>{department.name}</td>
-                  <td>
-                    <ul>
-                      {department.role.map((role) => {
-                        total += role._count.employee;
-                        return (
-                          <li key={role.id}>
-                            {role.title} ({role._count.employee})
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </td>
-                  <td>{total}</td>
-                  <td>
-                    <div className="flex items-center justify-center gap-4 text-sm">
-                      <IconTrash
-                        cursor={"pointer"}
-                        onClick={() => {
-                          deleteDepartment(department.id);
-                        }}
-                      />
-                      <IconEdit
-                        cursor="pointer"
-                        onClick={() => {
-                          setDepartmentId(department.id);
-                          setOpen(true);
-                        }}
-                      />
-                    </div>
-                  </td>
-                </tr>
+                <DisplayDepartment
+                  department={department}
+                  total={total}
+                  setOpen={setOpen}
+                  setDepartmentId={setDepartmentId}
+                />
               );
             })}
         </tbody>
