@@ -1,16 +1,14 @@
 import { Input, Select } from "@mantine/core";
-import { useState } from "react";
+import {  useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { api } from "../../utils/api";
 
-export const EditEmployee = ({
-  id,
-  revalidate,
-  setOpen,
-}: {
+type EditEmployeeProps = {
   id: number;
-  revalidate: any;
-  setOpen: Function;
-}) => {
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export const EditEmployee: React.FC<EditEmployeeProps> = ({ id, setOpen }) => {
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [empRole, setEmpRole] = useState<string | null>("");
@@ -18,11 +16,13 @@ export const EditEmployee = ({
   const roles = api.role.getAll.useQuery();
   const employee = api.employee.getSingle.useQuery({ id });
   const managers = api.employee.getAll.useQuery();
-
+  const refetch = api.employee.getAll.useQuery().refetch;
   const createEmpDb = api.employee.update.useMutation({
-    onSuccess: () => {
-      revalidate.refetch();
-      employee.refetch();
+    onSuccess: async () => {
+      await refetch()
+      .catch(err=>{
+        console.log(err)
+      })
       setOpen(false);
     },
     onError: (err) => {

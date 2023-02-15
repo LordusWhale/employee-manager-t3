@@ -7,31 +7,49 @@ import {
 import { api } from "../../utils/api";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { EditEmployee } from "./editEmployee";
-export const ListEmployees = ({
-  employees,
-  revalidate,
-}: {
-  employees: any;
-  revalidate: any;
-}) => {
+import type { department, employee, role } from "@prisma/client";
+
+type ListEmployeeProps = {
+  employees:
+    | (employee & {
+        role:
+          | (role & {
+              department: department;
+            })
+          | null;
+        manager:
+          | (employee & {
+              role: role | null;
+            })
+          | null;
+      })[]
+    | undefined;
+};
+
+export const ListEmployees = ({ employees }: ListEmployeeProps) => {
   const [sortMethod, setSortMethod] = useState<EmployeeSortMethods>("none");
   const [search, setSearch] = useState<string>("");
   const [editEmployee, setEditEmployee] = useState<boolean>(false);
   const [employeeId, setEmployeeId] = useState<number>(0);
   const deleteEmp = api.employee.delete.useMutation();
+  const refetch = api.employee.getAll.useQuery().refetch;
   const deleteEmployee = async (id: number) => {
     await deleteEmp.mutateAsync({ id }).catch((err) => {
       console.log(err);
     });
-    revalidate.refetch();
+    await refetch()
+      .catch(err=>{
+        console.log(err)
+      })
   };
   const searchData = (input: string) => {
     if (input === "") return employees;
-    return employees.filter((employee: any) => {
+    return employees?.filter((employee) => {
       const name = `${employee.first_name} ${employee.last_name}`;
       return name.toLowerCase().includes(input.toLowerCase());
     });
   };
+
   return (
     <>
       <div className="flex w-full items-center justify-center">
@@ -47,17 +65,13 @@ export const ListEmployees = ({
         opened={editEmployee}
         onClose={() => setEditEmployee(false)}
       >
-        <EditEmployee
-          id={employeeId}
-          revalidate={revalidate}
-          setOpen={setEditEmployee}
-        />
+        <EditEmployee id={employeeId} setOpen={setEditEmployee} />
       </Modal>
       <Table withColumnBorders>
         <thead className="font-bold">
           <tr>
-            <th 
-            className="hover:bg-indigo-200"
+            <th
+              className="hover:bg-indigo-200"
               onClick={() => {
                 setSortMethod((prev) => {
                   if (prev === "idAcending") return "idDecending";
@@ -68,7 +82,7 @@ export const ListEmployees = ({
               ID
             </th>
             <th
-            className="hover:bg-indigo-200"
+              className="hover:bg-indigo-200"
               onClick={() =>
                 setSortMethod((prev) => {
                   if (prev === "nameAcending") return "nameDecending";
@@ -79,7 +93,7 @@ export const ListEmployees = ({
               Name
             </th>
             <th
-            className="hover:bg-indigo-200"
+              className="hover:bg-indigo-200"
               onClick={() => {
                 setSortMethod((prev) => {
                   if (prev === "roleAcending") return "roleDecending";
@@ -90,7 +104,7 @@ export const ListEmployees = ({
               Role
             </th>
             <th
-            className="hover:bg-indigo-200"
+              className="hover:bg-indigo-200"
               onClick={() => {
                 setSortMethod((prev) => {
                   if (prev === "departmentAcending")
@@ -105,43 +119,45 @@ export const ListEmployees = ({
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
-          {searchData(search)
-            .sort(employeeSortMethods[sortMethod].method)
-            .map((employee: any) => {
-              return (
-                <tr key={employee.id}>
-                  <td>{employee.id}</td>
-                  <td>
-                    {employee.first_name} {employee.last_name}
-                  </td>
-                  <td>{employee.role?.title}</td>
-                  <td>{employee.role?.department.name}</td>
-                  <td>
-                    {employee.manager &&
-                      `${employee.manager?.first_name} ${employee.manager?.last_name} (${employee.manager?.role?.title})`}
-                  </td>
-                  <td>
-                    <div className="flex items-center justify-center gap-4 text-sm">
-                      <IconTrash
-                        onClick={() => {
-                          deleteEmployee(employee.id);
-                        }}
-                        cursor={"pointer"}
-                      />
-                      <IconEdit
-                        cursor={"pointer"}
-                        onClick={() => {
-                          setEmployeeId(employee.id);
-                          setEditEmployee(true);
-                        }}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-        </tbody>
+        {employees && (
+          <tbody>
+            {searchData(search)
+              ?.sort(employeeSortMethods[sortMethod].method)
+              .map((employee) => {
+                return (
+                  <tr key={employee.id}>
+                    <td>{employee.id}</td>
+                    <td>
+                      {employee.first_name} {employee.last_name}
+                    </td>
+                    <td>{employee.role?.title}</td>
+                    <td>{employee.role?.department.name}</td>
+                    <td>
+                      {employee.manager &&
+                        `${employee.manager?.first_name} ${employee.manager?.last_name} (${employee.manager?.role?.title})`}
+                    </td>
+                    <td>
+                      <div className="flex items-center justify-center gap-4 text-sm">
+                        <IconTrash
+                          onClick={() => {
+                            deleteEmployee(employee.id);
+                          }}
+                          cursor={"pointer"}
+                        />
+                        <IconEdit
+                          cursor={"pointer"}
+                          onClick={() => {
+                            setEmployeeId(employee.id);
+                            setEditEmployee(true);
+                          }}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        )}
       </Table>
     </>
   );

@@ -1,22 +1,26 @@
 import { Input } from "@mantine/core";
 import { useState } from "react";
 import { api } from "../../utils/api";
+import type { Dispatch, SetStateAction } from "react";
 
-export const EditDepartment = ({
+type EditDepartmentProps = {
+  departmentId: number;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export const EditDepartment: React.FC<EditDepartmentProps> = ({
   departmentId,
   setOpen,
-  revalidate,
-}: {
-  departmentId: number;
-  setOpen: Function;
-  revalidate: any;
 }) => {
   const [name, setName] = useState<string>("");
   const department = api.department.getSingle.useQuery({ id: departmentId });
+  const refetch = api.department.getAll.useQuery().refetch;
   const editDepartmentDb = api.department.update.useMutation({
-    onSuccess: () => {
-      revalidate.refetch();
-      department.refetch();
+    onSuccess: async () => {
+      await refetch()
+      .catch(err=>{
+        console.log(err)
+      });
       setOpen(false);
     },
   });

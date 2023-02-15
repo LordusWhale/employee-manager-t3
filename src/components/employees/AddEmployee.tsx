@@ -1,35 +1,41 @@
 import { Input, Select } from "@mantine/core";
 import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { api } from "../../utils/api";
 
-export const AddEmployee = ({
-  setOpen,
-  revalidate,
-}: {
-  setOpen: Function;
-  revalidate: any;
-}) => {
+type AddEmployeeProps = {
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export const AddEmployee: React.FC<AddEmployeeProps> = ({ setOpen }) => {
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [empRole, setEmpRole] = useState<string | null>("");
   const [manager, setManager] = useState<string | null>("");
   const roles = api.role.getAll.useQuery();
   const managers = api.employee.getAll.useQuery();
-
+  const refetch = api.employee.getAll.useQuery().refetch;
   const createEmpDb = api.employee.add.useMutation({
-    onSuccess: () => {
-      revalidate.refetch();
+    onSuccess: async () => {
+      await refetch()
+      .catch(err=>{
+        console.log(err)
+      })
       setOpen(false);
     },
   });
-  const createEmp = () => {
+  const createEmp = async () => {
     if (!empRole) return;
-    createEmpDb.mutateAsync({
-      firstName: firstName,
-      lastName: lastName,
-      role: parseInt(empRole),
-      manager: manager ? parseInt(manager) : undefined,
-    });
+    await createEmpDb
+      .mutateAsync({
+        firstName: firstName,
+        lastName: lastName,
+        role: parseInt(empRole),
+        manager: manager ? parseInt(manager) : undefined,
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   return (
     <div className="flex flex-col gap-8">

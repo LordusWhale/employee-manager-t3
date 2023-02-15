@@ -10,23 +10,22 @@ const Employees: NextPage = () => {
   const employees = api.employee.getAll.useQuery();
   return (
     <>
-     <button
-          className="rounded-md absolute right-0 mt-8 text-white mr-8 bg-indigo-400 px-10 py-4"
-          onClick={() => {
-            setAddEmployee(true);
-          }}
-        >
-          Add employee
-        </button>
+      <button
+        className="absolute right-0 mt-8 mr-8 rounded-md bg-indigo-400 px-10 py-4 text-white"
+        onClick={() => {
+          setAddEmployee(true);
+        }}
+      >
+        Add employee
+      </button>
       <div className="flex w-full flex-col justify-center py-2 px-10 ">
         {employees.isLoading ? (
           <p>Loading...</p>
         ) : (
           <div className="w-full py-20">
-            {employees.data && <ListEmployees employees={employees.data} revalidate={employees} />}
+            {employees.data && <ListEmployees employees={employees.data} />}
           </div>
         )}
-       
       </div>
       <Modal
         centered
@@ -35,11 +34,10 @@ const Employees: NextPage = () => {
           setAddEmployee(false);
         }}
       >
-        <AddEmployee setOpen={setAddEmployee} revalidate={employees} />
+        <AddEmployee setOpen={setAddEmployee} />
       </Modal>
     </>
   );
 };
-
 
 export default Employees;

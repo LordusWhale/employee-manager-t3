@@ -3,16 +3,30 @@ import { api } from "../../utils/api";
 import { EditDepartment } from "./editDepartment";
 import { useState } from "react";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
-export const ListDepartments = ({
+import type { department, role } from "@prisma/client";
+
+type ListDepartmentsProps = {
+  departments:
+    | (department & {
+        role: (role & {
+          _count: {
+            employee: number;
+          };
+        })[];
+      })[]
+    | undefined;
+};
+
+export const ListDepartments: React.FC<ListDepartmentsProps> = ({
   departments,
-  revalidate,
-}: {
-  departments: any;
-  revalidate: any;
 }) => {
+  const refetch = api.department.getAll.useQuery().refetch;
   const deleteDepartmentDb = api.department.delete.useMutation({
-    onSuccess: () => {
-      revalidate.refetch();
+    onSuccess: async () => {
+      await refetch()
+      .catch(err=>{
+        console.log(err)
+      })
     },
   });
   const [departmentId, setDepartmentId] = useState<number>(0);
@@ -33,7 +47,7 @@ export const ListDepartments = ({
           </tr>
         </thead>
         <tbody>
-          {departments.map((department: any) => {
+          {departments?.map((department) => {
             let total = 0;
             return (
               <tr key={department.id}>
@@ -41,7 +55,7 @@ export const ListDepartments = ({
                 <td>{department.name}</td>
                 <td>
                   <ul>
-                    {department.role.map((role: any) => {
+                    {department.role.map((role) => {
                       total += role._count.employee;
                       return (
                         <li>
@@ -77,7 +91,6 @@ export const ListDepartments = ({
       <Modal centered opened={open} onClose={() => setOpen(false)}>
         <EditDepartment
           departmentId={departmentId}
-          revalidate={revalidate}
           setOpen={setOpen}
         />
       </Modal>

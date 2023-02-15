@@ -1,4 +1,4 @@
-import { Modal, Table } from "@mantine/core";
+import { Modal } from "@mantine/core";
 import { NextPage } from "next";
 import { api } from "../utils/api";
 import { useState } from "react";
@@ -8,6 +8,7 @@ import { ListDepartments } from "../components/departments/listDepartments";
 const Department: NextPage = () => {
   const [open, setOpen] = useState(false);
   const department = api.department.getAll.useQuery();
+  department.data;
   return (
     <div>
       <button
@@ -24,10 +25,7 @@ const Department: NextPage = () => {
         ) : (
           <div className="w-full py-20">
             {" "}
-            <ListDepartments
-              departments={department.data}
-              revalidate={department}
-            />
+            <ListDepartments departments={department.data} />
           </div>
         )}
       </div>
@@ -38,7 +36,7 @@ const Department: NextPage = () => {
           setOpen(false);
         }}
       >
-        <AddDepartment setOpen={setOpen} revalidate={department} />
+        <AddDepartment setOpen={setOpen} />
       </Modal>
     </div>
   );

@@ -1,4 +1,4 @@
-import { Modal} from "@mantine/core";
+import { Modal } from "@mantine/core";
 import { NextPage } from "next";
 import { api } from "../utils/api";
 import { useState } from "react";
@@ -6,7 +6,7 @@ import { ListRoles } from "../components/roles/listRoles";
 import { AddRole } from "../components/roles/addRole";
 
 const Roles: NextPage = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const roles = api.role.getAll.useQuery();
   return (
     <div>
@@ -24,7 +24,7 @@ const Roles: NextPage = () => {
         ) : (
           <div className="w-full py-20">
             {" "}
-            <ListRoles roles={roles.data} revalidate={roles} />
+            <ListRoles roles={roles.data} />
           </div>
         )}
       </div>
@@ -35,7 +35,7 @@ const Roles: NextPage = () => {
           setOpen(false);
         }}
       >
-        <AddRole setOpen={setOpen} revalidate={roles} />
+        <AddRole setOpen={setOpen} />
       </Modal>
     </div>
   );

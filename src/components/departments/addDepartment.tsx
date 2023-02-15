@@ -1,26 +1,32 @@
-import { Input, Select } from "@mantine/core";
+import { Input } from "@mantine/core";
 import { useState } from "react";
+import type {SetStateAction, Dispatch} from "react";
 import { api } from "../../utils/api";
 
-export const AddDepartment = ({
-  setOpen,
-  revalidate,
-}: {
-  setOpen: Function;
-  revalidate: any;
-}) => {
+type AddDepartmentProps = {
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export const AddDepartment: React.FC<AddDepartmentProps> = ({ setOpen }) => {
   const [name, setName] = useState<string>("");
+  const refetch = api.department.getAll.useQuery().refetch;
   const createDepartmentDb = api.department.add.useMutation({
-    onSuccess: () => {
-      revalidate.refetch();
+    onSuccess: async () => {
+      await refetch()
+      .catch(err=>{
+        console.log(err)
+      })
       setOpen(false);
     },
   });
-  const createDepartment = () => {
+  const createDepartment = async () => {
     if (!name) return;
-    createDepartmentDb.mutateAsync({
+    await createDepartmentDb.mutateAsync({
       name: name,
-    });
+    })
+    .catch(err=>{
+      console.log(err)
+    })
   };
   return (
     <div className="flex flex-col gap-8">

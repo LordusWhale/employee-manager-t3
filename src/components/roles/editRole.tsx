@@ -1,20 +1,21 @@
 import { Input, Select, Slider } from "@mantine/core";
 import { useState } from "react";
 import { api } from "../../utils/api";
-
-export const EditRole = ({
-  roleId,
-  revalidate,
-  setOpen,
-}: {
+import type { Dispatch, SetStateAction } from "react";
+type EditRoleProps = {
   roleId: number;
-  revalidate: any;
-  setOpen: Function;
-}) => {
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export const EditRole: React.FC<EditRoleProps> = ({ roleId, setOpen }) => {
   const role = api.role.getSingleRole.useQuery({ id: roleId });
+  const refetch = api.role.getAll.useQuery().refetch;
   const addRole = api.role.update.useMutation({
-    onSuccess: () => {
-      revalidate.refetch();
+    onSuccess: async () => {
+      await refetch()
+      .catch(err=>{
+        console.log(err)
+      })
       role.refetch();
       setOpen(false);
     },

@@ -1,6 +1,8 @@
+import { department } from "@prisma/client";
+
 export const departmentSortMethods = {
   nameAcending: {
-    method: (a: any, b: any) => {
+    method: (a: department, b: department) => {
       if (a.name.toLowerCase() < b.name.toLowerCase()) {
         return -1;
       }
@@ -11,7 +13,7 @@ export const departmentSortMethods = {
     },
   },
   nameDecending: {
-    method: (a: any, b: any) => {
+    method: (a: department, b: department) => {
       if (a.name.toLowerCase() < b.name.toLowerCase()) {
         return 1;
       }
@@ -22,7 +24,7 @@ export const departmentSortMethods = {
     },
   },
   idAcending: {
-    method: (a: any, b: any) => {
+    method: (a: department, b: department) => {
       if (a.id < b.id) {
         return -1;
       }
@@ -33,7 +35,7 @@ export const departmentSortMethods = {
     },
   },
   idDecending: {
-    method: (a: any, b: any) => {
+    method: (a: department, b: department) => {
       if (a.id < b.id) {
         return 1;
       }
@@ -43,7 +45,7 @@ export const departmentSortMethods = {
       return 0;
     },
   },
-} as any;
+};
 
 export type DepartmentSortMethods =
   | "none"

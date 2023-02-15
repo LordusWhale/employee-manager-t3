@@ -1,11 +1,27 @@
+import { department, employee, role } from "@prisma/client";
+
+type Employee =
+  | employee & {
+      role:
+        | (role & {
+            department: department;
+          })
+        | null;
+      manager:
+        | (employee & {
+            role: role | null;
+          })
+        | null;
+    };
+
 export const employeeSortMethods = {
   none: {
-    method: (a: any, b: any) => {
+    method: (a: Employee, b: Employee) => {
       return 0;
     },
   },
   nameAcending: {
-    method: (a: any, b: any) => {
+    method: (a: Employee, b: Employee) => {
       if (a.first_name.toLowerCase() < b.first_name.toLowerCase()) {
         return -1;
       }
@@ -16,7 +32,7 @@ export const employeeSortMethods = {
     },
   },
   nameDecending: {
-    method: (a: any, b: any) => {
+    method: (a: Employee, b: Employee) => {
       if (a.first_name.toLowerCase() < b.first_name.toLowerCase()) {
         return 1;
       }
@@ -27,7 +43,10 @@ export const employeeSortMethods = {
     },
   },
   roleAcending: {
-    method: (a: any, b: any) => {
+    method: (a: Employee, b: Employee) => {
+      if (!a.role || !b.role) {
+        return 0;
+      }
       if (a.role.title.toLowerCase() < b.role.title.toLowerCase()) {
         return -1;
       }
@@ -38,7 +57,11 @@ export const employeeSortMethods = {
     },
   },
   roleDecending: {
-    method: (a: any, b: any) => {
+    method: (a: Employee, b: Employee) => {
+      if (!a.role || !b.role) {
+        return 0;
+      }
+
       if (a.role.title.toLowerCase() < b.role.title.toLowerCase()) {
         return 1;
       }
@@ -49,7 +72,10 @@ export const employeeSortMethods = {
     },
   },
   departmentAcending: {
-    method: (a: any, b: any) => {
+    method: (a: Employee, b: Employee) => {
+      if (!a.role || !b.role) {
+        return 0;
+      }
       if (
         a.role.department.name.toLowerCase() <
         b.role.department.name.toLowerCase()
@@ -66,7 +92,11 @@ export const employeeSortMethods = {
     },
   },
   departmentDecending: {
-    method: (a: any, b: any) => {
+    method: (a: Employee, b: Employee) => {
+      if (!a.role || !b.role) {
+        return 0;
+      }
+
       if (
         a.role.department.name.toLowerCase() <
         b.role.department.name.toLowerCase()
@@ -83,7 +113,7 @@ export const employeeSortMethods = {
     },
   },
   idDecending: {
-    method: (a: any, b: any) => {
+    method: (a: Employee, b: Employee) => {
       if (a.id < b.id) {
         return 1;
       }
@@ -94,7 +124,7 @@ export const employeeSortMethods = {
     },
   },
   idAcending: {
-    method: (a: any, b: any) => {
+    method: (a: Employee, b: Employee) => {
       if (a.id < b.id) {
         return -1;
       }
@@ -104,7 +134,7 @@ export const employeeSortMethods = {
       return 0;
     },
   },
-} as any;
+};
 export type EmployeeSortMethods =
   | "none"
   | "nameAcending"
