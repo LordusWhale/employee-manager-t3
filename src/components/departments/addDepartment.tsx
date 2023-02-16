@@ -1,7 +1,8 @@
-import { Input, Loader } from "@mantine/core";
 import { useState } from "react";
 import type { SetStateAction, Dispatch } from "react";
 import { api } from "../../utils/api";
+import { UpdateButton } from "../updateButton";
+import { DepartmentForm } from "./departmentGorm";
 
 type AddDepartmentProps = {
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -32,26 +33,12 @@ export const AddDepartment: React.FC<AddDepartmentProps> = ({ setOpen }) => {
       });
   };
   return (
-    <div className="flex flex-col gap-8">
-      <Input.Wrapper label="Name of department">
-        <Input
-          placeholder="Name of department"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </Input.Wrapper>
-      <div className="flex w-full items-center justify-center">
-        {loading ? (
-          <Loader />
-        ) : (
-          <button
-            className="w-full bg-indigo-500 p-2 text-white"
-            onClick={createDepartment}
-          >
-            Save
-          </button>
-        )}
-      </div>
-    </div>
+    <DepartmentForm
+      setName={setName}
+      type="add"
+      Button={
+        <UpdateButton loading={loading} updateMethod={createDepartment} />
+      }
+    />
   );
 };

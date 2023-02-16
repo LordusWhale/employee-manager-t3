@@ -4,6 +4,7 @@ import { IconEdit, IconTrash } from "@tabler/icons-react";
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { api } from "../../utils/api";
+import { UpdateIcons } from "../updateIcons";
 
 type DisplayDepartmentProps = {
   department: department & {
@@ -34,9 +35,9 @@ export const DisplayDepartment: React.FC<DisplayDepartmentProps> = ({
       setIsDeleting(false);
     },
   });
-  const deleteDepartment = (id: number) => {
+  const deleteDepartment = async (id: number) => {
     setIsDeleting(true);
-    deleteDepartmentDb.mutateAsync({ id });
+    await deleteDepartmentDb.mutateAsync({ id });
   };
   return (
     <tr key={department.id}>
@@ -55,27 +56,13 @@ export const DisplayDepartment: React.FC<DisplayDepartmentProps> = ({
       </td>
       <td>{total}</td>
       <td>
-        <div className="flex items-center justify-center gap-4 text-sm">
-          {isDeleting ? (
-            <Loader w={20} />
-          ) : (
-            <>
-              <IconTrash
-                cursor={"pointer"}
-                onClick={() => {
-                  deleteDepartment(department.id);
-                }}
-              />
-              <IconEdit
-                cursor="pointer"
-                onClick={() => {
-                  setDepartmentId(department.id);
-                  setOpen(true);
-                }}
-              />
-            </>
-          )}
-        </div>
+        <UpdateIcons
+          deleteMethod={deleteDepartment}
+          isDeleting={isDeleting}
+          employeeId={department.id}
+          setId={setDepartmentId}
+          setEdit={setOpen}
+        />
       </td>
     </tr>
   );

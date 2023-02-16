@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { department, role } from "@prisma/client";
 import type { DepartmentSortMethods } from "../../utils/sort/departmentSort";
 import { departmentSortMethods } from "../../utils/sort/departmentSort";
-import { DisplayDepartment } from "./DisplayDepartment";
+import { DisplayDepartment } from "./displayDepartment";
 type ListDepartmentsProps = {
   departments:
     | (department & {

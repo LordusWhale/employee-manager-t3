@@ -3,7 +3,7 @@ import { LoadingOverlay, Modal } from "@mantine/core";
 import { api } from "../utils/api";
 import { useState } from "react";
 import { ListEmployees } from "../components/employees/ListEmployees";
-import { AddEmployee } from "../components/employees/AddEmployee";
+import { AddEmployee } from"../components/employees/addEmployee";
 const Employees: NextPage = () => {
   const [addEmployee, setAddEmployee] = useState<boolean>(false);
   const employees = api.employee.getAll.useQuery();

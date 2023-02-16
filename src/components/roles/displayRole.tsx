@@ -4,6 +4,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { api } from "../../utils/api";
 import { useState } from "react";
 import { Loader } from "@mantine/core";
+import { UpdateIcons } from "../updateIcons";
 type DisplayRoleProps = {
   role: role & {
     department: department;
@@ -26,9 +27,9 @@ export const DisplayRole = ({ role, setRoleId, setOpen }: DisplayRoleProps) => {
       setIsDeleting(false);
     },
   });
-  const deleteRole = (id: number) => {
+  const deleteRole = async (id: number) => {
     setIsDeleting(true);
-    deleteRoleDb.mutateAsync({ id });
+    await deleteRoleDb.mutateAsync({ id });
   };
   return (
     <tr key={role.id}>
@@ -39,27 +40,13 @@ export const DisplayRole = ({ role, setRoleId, setOpen }: DisplayRoleProps) => {
       <td>{role._count.employee}</td>
 
       <td>
-        <div className="flex items-center justify-center gap-4 text-sm">
-          {isDeleting ? (
-            <Loader w={20} />
-          ) : (
-            <>
-              <IconTrash
-                cursor={"pointer"}
-                onClick={() => {
-                  deleteRole(role.id);
-                }}
-              />
-              <IconEdit
-                cursor="pointer"
-                onClick={() => {
-                  setRoleId(role.id);
-                  setOpen(true);
-                }}
-              />
-            </>
-          )}
-        </div>
+        <UpdateIcons
+          deleteMethod={deleteRole}
+          employeeId={role.id}
+          isDeleting={isDeleting}
+          setEdit={setOpen}
+          setId={setRoleId}
+        />
       </td>
     </tr>
   );

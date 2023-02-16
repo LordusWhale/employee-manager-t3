@@ -2,6 +2,8 @@ import { Input, Loader, Select, Slider } from "@mantine/core";
 import { useState } from "react";
 import { api } from "../../utils/api";
 import type { Dispatch, SetStateAction } from "react";
+import { UpdateButton } from "../updateButton";
+import { RoleForm } from "./roleForm";
 type EditRoleProps = {
   roleId: number;
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -10,7 +12,7 @@ type EditRoleProps = {
 export const EditRole: React.FC<EditRoleProps> = ({ roleId, setOpen }) => {
   const role = api.role.getSingleRole.useQuery({ id: roleId });
   const refetch = api.role.getAll.useQuery().refetch;
-  const addRole = api.role.update.useMutation({
+  const editRole = api.role.update.useMutation({
     onSuccess: async () => {
       await refetch().catch((err) => {
         console.log(err);
@@ -20,7 +22,6 @@ export const EditRole: React.FC<EditRoleProps> = ({ roleId, setOpen }) => {
       setOpen(false);
     },
   });
-  const departments = api.department.getAll.useQuery();
   const [title, setTitle] = useState<string>("");
   const [department, setDepartment] = useState<string | null>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -33,7 +34,7 @@ export const EditRole: React.FC<EditRoleProps> = ({ roleId, setOpen }) => {
         departmentId = parseInt(department);
       }
     }
-    addRole.mutateAsync({
+    editRole.mutateAsync({
       id: roleId,
       title: title || undefined,
       department: departmentId,
@@ -41,56 +42,13 @@ export const EditRole: React.FC<EditRoleProps> = ({ roleId, setOpen }) => {
     });
   };
   return (
-    <>
-      {role.isLoading && (
-        <div className="flex h-full w-full items-center justify-center">
-          <Loader />
-        </div>
-      )}
-      {role.data && (
-        <div className="flex flex-col gap-8">
-          <Input.Wrapper label="Name of department">
-            <Input
-              placeholder="Title of role"
-              defaultValue={role.data.title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </Input.Wrapper>
-          {departments.data && (
-            <Select
-              label="Department"
-              placeholder="Select department"
-              defaultValue={role.data.department.id.toString()}
-              onChange={setDepartment}
-              data={departments.data.map((department) => {
-                return { label: department.name, value: `${department.id}` };
-              })}
-            ></Select>
-          )}
-          <div>
-            <label className="text-sm">Salary</label>
-            <Slider
-              defaultValue={parseInt(role.data.salary.toString())}
-              onChange={setSalary}
-              placeholder="Salary"
-              min={50000}
-              max={200000}
-            />
-          </div>
-          <div className="flex w-full items-center justify-center">
-            {loading ? (
-              <Loader />
-            ) : (
-              <button
-                className="w-full bg-indigo-500 p-2 text-white"
-                onClick={updateRole}
-              >
-                Save
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-    </>
+    <RoleForm
+      Button={<UpdateButton updateMethod={updateRole} loading={loading} />}
+      setDepartment={setDepartment}
+      setSalary={setSalary}
+      setTitle={setTitle}
+      type="edit"
+      roleId={roleId}
+    />
   );
 };

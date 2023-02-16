@@ -1,7 +1,8 @@
-import { Input, Loader, Select } from "@mantine/core";
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { api } from "../../utils/api";
+import { UpdateButton } from "../updateButton";
+import { EmployeeForm } from "./employeeForm";
 
 type AddEmployeeProps = {
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -13,8 +14,6 @@ export const AddEmployee: React.FC<AddEmployeeProps> = ({ setOpen }) => {
   const [empRole, setEmpRole] = useState<string | null>("");
   const [manager, setManager] = useState<string | null>("");
   const [loading, setLoading] = useState(false);
-  const roles = api.role.getAll.useQuery();
-  const managers = api.employee.getAll.useQuery();
   const refetch = api.employee.getAll.useQuery().refetch;
   const createEmpDb = api.employee.add.useMutation({
     onSuccess: async () => {
@@ -25,10 +24,11 @@ export const AddEmployee: React.FC<AddEmployeeProps> = ({ setOpen }) => {
       setOpen(false);
     },
   });
-  const createEmp = async () => {
+  const createEmp = () => {
     if (!empRole) return;
     setLoading(true);
-    await createEmpDb
+    console.log(firstName, lastName, empRole, manager);
+    createEmpDb
       .mutateAsync({
         firstName: firstName,
         lastName: lastName,
@@ -40,77 +40,13 @@ export const AddEmployee: React.FC<AddEmployeeProps> = ({ setOpen }) => {
       });
   };
   return (
-    <div className="flex flex-col gap-8">
-      {roles.isLoading || managers.isLoading ? (
-        <div className="flex h-full w-full items-center justify-center">
-          <Loader />
-        </div>
-      ) : (
-        <>
-          <h1 className="text-center text-lg">Add Employee</h1>
-          <Input.Wrapper label="First Name">
-            <Input
-              placeholder="First Name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-          </Input.Wrapper>
-
-          <Input.Wrapper label="Last Name">
-            <Input
-              placeholder="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-          </Input.Wrapper>
-
-          {roles.data && (
-            <Select
-              placeholder="Role"
-              onChange={setEmpRole}
-              label="Role"
-              data={[
-                ...roles.data.map((role) => {
-                  return {
-                    value: `${role.id}`,
-                    label: role.title,
-                  };
-                }),
-              ]}
-            ></Select>
-          )}
-          {managers.data && (
-            <Select
-              searchable
-              nothingFound="No employees found"
-              placeholder="Manager"
-              label="Manager"
-              onChange={setManager}
-              data={[
-                { value: "", label: "No Manager" },
-                ...managers.data.map((manager) => {
-                  return {
-                    value: `${manager.id}`,
-                    label: `${manager.first_name} ${manager?.last_name} (${manager?.role?.title})`,
-                  };
-                }),
-              ]}
-            ></Select>
-          )}
-          <div className="flex w-full items-center justify-center">
-            {loading ? (
-              <Loader />
-            ) : (
-              <button
-                className="w-full bg-indigo-500 p-2 text-white"
-                onClick={createEmp}
-              >
-                Save
-              </button>
-            )}
-          </div>
-        </>
-      )}
-    </div>
+    <EmployeeForm
+      setEmpRole={setEmpRole}
+      setFirstName={setFirstName}
+      setLastName={setLastName}
+      setManager={setManager}
+      type="create"
+      Button={<UpdateButton loading={loading} updateMethod={createEmp} />}
+    />
   );
 };

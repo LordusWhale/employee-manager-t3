@@ -1,7 +1,8 @@
-import { Input, Loader } from "@mantine/core";
 import { useState } from "react";
 import { api } from "../../utils/api";
 import type { Dispatch, SetStateAction } from "react";
+import { UpdateButton } from "../updateButton";
+import { DepartmentForm } from "./departmentGorm";
 
 type EditDepartmentProps = {
   departmentId: number;
@@ -14,7 +15,7 @@ export const EditDepartment: React.FC<EditDepartmentProps> = ({
 }) => {
   const [name, setName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const department = api.department.getSingle.useQuery({ id: departmentId });
+
   const refetch = api.department.getAll.useQuery().refetch;
   const editDepartmentDb = api.department.update.useMutation({
     onSuccess: async () => {
@@ -33,31 +34,13 @@ export const EditDepartment: React.FC<EditDepartmentProps> = ({
     });
   };
   return (
-    <div className="flex flex-col gap-8">
-      {department.isLoading && (
-        <div className="flex h-full w-full items-center justify-center">
-          <Loader />
-        </div>
-      )}
-      <Input.Wrapper label="Name of department">
-        <Input
-          placeholder="Name of department"
-          defaultValue={department.data?.name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </Input.Wrapper>
-      <div className="flex w-full items-center justify-center">
-        {loading ? (
-          <Loader />
-        ) : (
-          <button
-            className="w-full bg-indigo-500 p-2 text-white"
-            onClick={updateDepartment}
-          >
-            Save
-          </button>
-        )}
-      </div>
-    </div>
+    <DepartmentForm
+      setName={setName}
+      type="edit"
+      departmentId={departmentId}
+      Button={
+        <UpdateButton loading={loading} updateMethod={updateDepartment} />
+      }
+    />
   );
 };
