@@ -1,5 +1,4 @@
 import { Modal, Table } from "@mantine/core";
-import { api } from "../../utils/api";
 import { EditDepartment } from "./editDepartment";
 import { useState } from "react";
 import type { department, role } from "@prisma/client";

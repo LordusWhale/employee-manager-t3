@@ -1,4 +1,3 @@
-import { Input, Loader, Select, Slider } from "@mantine/core";
 import { useState } from "react";
 import { Dispatch, SetStateAction } from "react";
 import { api } from "../../utils/api";

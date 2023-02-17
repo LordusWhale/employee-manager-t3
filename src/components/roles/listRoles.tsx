@@ -1,6 +1,4 @@
 import { Modal, Table } from "@mantine/core";
-import { api } from "../../utils/api";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
 import { EditRole } from "./editRole";
 import { roleSortMethods, RoleSortMethods } from "../../utils/sort/roleSort";

@@ -1,6 +1,4 @@
-import { Loader } from "@mantine/core";
 import { department, role } from "@prisma/client";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { api } from "../../utils/api";

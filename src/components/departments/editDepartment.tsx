@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api } from "../../utils/api";
 import type { Dispatch, SetStateAction } from "react";
 import { UpdateButton } from "../updateButton";
-import { DepartmentForm } from "./departmentGorm";
+import { DepartmentForm } from "./departmentForm";
 
 type EditDepartmentProps = {
   departmentId: number;

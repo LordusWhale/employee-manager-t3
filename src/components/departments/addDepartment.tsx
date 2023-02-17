@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { SetStateAction, Dispatch } from "react";
 import { api } from "../../utils/api";
 import { UpdateButton } from "../updateButton";
-import { DepartmentForm } from "./departmentGorm";
+import { DepartmentForm } from "./departmentForm";
 
 type AddDepartmentProps = {
   setOpen: Dispatch<SetStateAction<boolean>>;

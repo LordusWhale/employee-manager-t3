@@ -1,5 +1,4 @@
 import { Input, Loader, Select } from "@mantine/core";
-import type { department, employee, role } from "@prisma/client";
 import type { Dispatch, SetStateAction } from "react";
 import { api } from "../../utils/api";
 interface EmployeeEditProps {

@@ -1,9 +1,7 @@
 import type { department, role } from "@prisma/client";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
 import type { Dispatch, SetStateAction } from "react";
 import { api } from "../../utils/api";
 import { useState } from "react";
-import { Loader } from "@mantine/core";
 import { UpdateIcons } from "../updateIcons";
 type DisplayRoleProps = {
   role: role & {
