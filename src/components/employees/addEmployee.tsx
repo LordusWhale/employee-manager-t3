@@ -27,7 +27,6 @@ export const AddEmployee: React.FC<AddEmployeeProps> = ({ setOpen }) => {
   const createEmp = () => {
     if (!empRole) return;
     setLoading(true);
-    console.log(firstName, lastName, empRole, manager);
     createEmpDb
       .mutateAsync({
         firstName: firstName,
