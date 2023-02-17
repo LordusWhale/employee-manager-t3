@@ -6,7 +6,7 @@ import {
 } from "../../utils/sort/employeeSort";
 import { EditEmployee } from "./editEmployee";
 import type { department, employee, role } from "@prisma/client";
-import { DisplayEmployee } from "./DiplayEmployee";
+import { DisplayEmployee } from "./diplayEmployee";
 
 type ListEmployeeProps = {
   employees:
