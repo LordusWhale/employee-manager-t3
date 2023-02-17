@@ -64,8 +64,8 @@ export const EmployeeForm: React.FC<EmployeeEditProps> = ({
               data={[
                 ...roles.data.map((role) => {
                   return {
-                    value: `${role.id}`,
                     label: role.title,
+                    value: `${role.id}`,
                   };
                 }),
               ]}
@@ -78,7 +78,7 @@ export const EmployeeForm: React.FC<EmployeeEditProps> = ({
               placeholder="Manager"
               label="Manager"
               defaultValue={employee?.data?.manager?.id.toString()}
-              onChange={setManager}
+              onChange={()=>setManager}
               data={[
                 { value: "None", label: "No Manager" },
                 ...managers.data.map((manager) => {
